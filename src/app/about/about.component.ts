@@ -1,4 +1,7 @@
+import { ContentObserver } from '@angular/cdk/observers';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { fromEvent, noop, observable, Observable, timer } from 'rxjs';
+
 
 @Component({
     selector: 'about',
@@ -11,6 +14,27 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+
+    const http$ = new Observable(observer => {
+      fetch('api/courses')
+        .then(response => {
+          return response.json();
+        })
+        .then(body => {
+          observer.next(body);
+          observer.complete();
+        })
+        .catch(err => {
+          observer.error(err);
+        });
+    }); 
+
+    http$.subscribe({
+      next: courses => console.log(courses),
+      complete: () => console.log('completed')
+    });
+
+
   }
 
 }
